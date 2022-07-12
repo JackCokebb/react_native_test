@@ -2,7 +2,8 @@
 // StatusBar represents clock, battery, wifi etc on the top of the phone screen
 // it is located under the Text component on the code 
 // but actually on the phone, it is locate on the top.
-// this is proof that some component and react native are just component that communicate with OS but not on screen
+// this is proof that some component and react native are just component 
+// that communicate with OS but not on screen
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 
