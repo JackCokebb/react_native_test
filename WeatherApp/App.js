@@ -1,4 +1,11 @@
-// StatusBar is the third party package
+/*
+  components are the thing which are in th return() and usually rendered on the screen.
+  API is just javascript code which is communicate with OS. ex) vibration
+*/
+
+// Expo team created own packages and APIS which we call Expo SDK includes a lot of APIs and components
+
+// StatusBar is the third party package (expo) // there is react native statusbar, but expo copy and improve it as their style
 // StatusBar represents clock, battery, wifi etc on the top of the phone screen
 // it is located under the Text component on the code 
 // but actually on the phone, it is locate on the top.
