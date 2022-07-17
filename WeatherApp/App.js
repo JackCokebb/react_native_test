@@ -1,6 +1,10 @@
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
+
+// everything in react native is component.
+// for example, there is no auto scroll down in React in contrast to web.
+// So we have to use ScrollView component
 
 export default function App() { 
   return (
@@ -9,12 +13,24 @@ export default function App() {
         <View style={styles.city}>
             <Text style={styles.cityName}>Seoul</Text>
         </View>
-        <View style={styles.weather}>
+        <ScrollView style={styles.weather}>
             <View style={styles.day}>
                 <Text style={styles.temp}>35</Text>
                 <Text style={styles.desc}>Sunny</Text>
             </View>
-        </View>
+            <View style={styles.day}>
+                <Text style={styles.temp}>35</Text>
+                <Text style={styles.desc}>Sunny</Text>
+            </View>
+            <View style={styles.day}>
+                <Text style={styles.temp}>35</Text>
+                <Text style={styles.desc}>Sunny</Text>
+            </View>
+            <View style={styles.day}>
+                <Text style={styles.temp}>35</Text>
+                <Text style={styles.desc}>Sunny</Text>
+            </View>
+        </ScrollView>
     </View>
   );
 }
