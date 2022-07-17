@@ -1,22 +1,54 @@
-import { View } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
+import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
 
-// Remember! component is the way we can configure the OS.
-// container View is already flex container by default.
-// and by default all the Flex direction is Column in contrast to web.
-
-// normally width and height will not be fixed, because it's not reactive.
-// flex: 1 is proportion which means if there is 3 views witgh same flex: 1,
-// they are gonna distribute their size equally 1:1:1
-// if flex: 2 inside of the parent, that means 2 times of parent flex proportion
-// View proportion is meaningful only when there is sibling View
 export default function App() { 
   return (
-    <View style={{flex: 1, flexDirection: "row"}}>
-        <View style={{flex: 1, backgroundColor: "tomato"}}></View>
-        <View style={{flex: 2, backgroundColor: "teal"}}></View>
-        <View style={{flex: 1, backgroundColor: "orange"}}></View>
+    <View style={styles.container}>
+        <StatusBar style="auto"/>
+        <View style={styles.city}>
+            <Text style={styles.cityName}>Seoul</Text>
+        </View>
+        <View style={styles.weather}>
+            <View style={styles.day}>
+                <Text style={styles.temp}>35</Text>
+                <Text style={styles.desc}>Sunny</Text>
+            </View>
+        </View>
     </View>
   );
 }
 
-// 07:33!!!!!
+const styles = StyleSheet.create({
+    container:{
+        flex: 1, 
+        backgroundColor: "lightgreen"
+    },
+    city:{
+        flex: 1, 
+        alignItems: "center",
+        justifyContent: "center"
+        
+    },
+    cityName:{
+        color:"whitesmoke",
+        fontSize: 48,
+        fontWeight: "600",
+    },
+    weather:{
+        flex: 3,
+        
+    },
+    day:{
+        flex: 1,
+        alignItems: "center",
+    },
+    temp:{
+        marginTop: 50,
+        fontSize: 158,
+    },
+    desc:{
+        marginTop: -30,
+        fontSize: 50,
+    }
+})
