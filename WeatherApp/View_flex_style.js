@@ -1,3 +1,4 @@
+
 import { View } from 'react-native';
 
 // Remember! component is the way we can configure the OS.
