@@ -1,7 +1,8 @@
 import { StatusBar } from 'expo-status-bar';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 // With Dimensions we can get the size of the screen
 import { View, Text, StyleSheet, ScrollView,Dimensions } from 'react-native';
+import * as Location from "expo-location";
 
 // everything in react native is component.
 // for example, there is no auto scroll down in React in contrast to web.
@@ -18,11 +19,32 @@ const {height, width:SCREEN_WIDTH} = Dimensions.get("window");
 //  showHorizontalScrollIndicator: if you set this as false -> hide the horizontal scroll bar 
 //  indicatorStyle: style of scroll bar only on ios(of cause we have to set the showHorizontalScrollIndicator as true)
 export default function App() { 
+    const [city, setCity] = useState("Loading...");
+    const [location, setLocation] =useState();
+    const [ok, setOk] =useState(true);
+    const ask = async()=>{
+        //const permission = await Location.requestForegroundPermissionsAsync();
+        //inside of permission(object) there is granted-value
+        const {granted} = await Location.requestForegroundPermissionsAsync();
+        if(!granted){
+            setOk(false);
+        }
+
+        //const location = await Location.getCurrentPositionAsync({accuracy:5});
+        const {coords:{latitude, longitude}} = await Location.getCurrentPositionAsync({accuracy:5});
+        const location = await Location.reverseGeocodeAsync({latitude,longitude},{useGoogleMaps:false});
+        setLocation(location);
+        setCity(location[0].city);
+        //console.log(location);
+    }
+    useEffect(()=>{
+        ask();
+    },[])
   return (
     <View style={styles.container}>
         <StatusBar style="auto"/>
         <View style={styles.city}>
-            <Text style={styles.cityName}>Seoul</Text>
+            <Text style={styles.cityName}>{city}</Text>
         </View>
         <ScrollView 
         horizontal 
@@ -64,7 +86,7 @@ const styles = StyleSheet.create({
         
     },
     cityName:{
-        color:"whitesmoke",
+        color:"black",
         fontSize: 48,
         fontWeight: "600",
     },
