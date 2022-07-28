@@ -4,6 +4,8 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView,Dimensions } from 'react-native';
 import * as Location from "expo-location";
 
+
+
 // everything in react native is component.
 // for example, there is no auto scroll down in React in contrast to web.
 // So we have to use ScrollView component
@@ -13,6 +15,9 @@ const {height, width:SCREEN_WIDTH} = Dimensions.get("window");
 //console.log(height, width);
 // width:SCREEN_WIDTH -means-> width == SCREEN_WIDTH
 
+//free api key 
+const API_KEY = "get your own";
+
 
 // Scroll view's prop -> 
 //  pagingEnabled: we can not freely scroll, instead it allows us to make pages
@@ -20,9 +25,10 @@ const {height, width:SCREEN_WIDTH} = Dimensions.get("window");
 //  indicatorStyle: style of scroll bar only on ios(of cause we have to set the showHorizontalScrollIndicator as true)
 export default function App() { 
     const [city, setCity] = useState("Loading...");
-    const [location, setLocation] =useState();
+    //const [location, setLocation] =useState();
+    const [days, setDays] =useState([]);
     const [ok, setOk] =useState(true);
-    const ask = async()=>{
+    const getWeather = async()=>{
         //const permission = await Location.requestForegroundPermissionsAsync();
         //inside of permission(object) there is granted-value
         const {granted} = await Location.requestForegroundPermissionsAsync();
@@ -33,12 +39,17 @@ export default function App() {
         //const location = await Location.getCurrentPositionAsync({accuracy:5});
         const {coords:{latitude, longitude}} = await Location.getCurrentPositionAsync({accuracy:5});
         const location = await Location.reverseGeocodeAsync({latitude,longitude},{useGoogleMaps:false});
-        setLocation(location);
+        //setLocation(location);
         setCity(location[0].city);
-        //console.log(location);
+        console.log(API_KEY);
+        const response = fetch(`https://api.openweathermap.org/data/2.5/onecall?lat=${latitude}&lon=${longitude}&exclude=alerts&appid=${API_KEY}`);
+        const json = await (await response).json();
+        console.log(json.daily);
+        ..........................#2.8 05:52...................
+
     }
     useEffect(()=>{
-        ask();
+        getWeather();
     },[])
   return (
     <View style={styles.container}>
