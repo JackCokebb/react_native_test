@@ -1,7 +1,14 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useState } from 'react';
 // With Dimensions we can get the size of the screen
-import { View, Text, StyleSheet, ScrollView,Dimensions } from 'react-native';
+// ActivityIndicator shows loading circles
+import { 
+    View, 
+    Text, 
+    StyleSheet, 
+    ScrollView,Dimensions,
+    ActivityIndicator
+} from 'react-native';
 import * as Location from "expo-location";
 
 
@@ -17,6 +24,13 @@ const {height, width:SCREEN_WIDTH} = Dimensions.get("window");
 
 //free api key 
 const API_KEY = "get your own";
+
+const today = new Date();   
+
+const year = today.getFullYear(); // 년도
+const month = today.getMonth() + 1;  // 월
+const date = today.getDate();  // 날짜
+
 
 
 // Scroll view's prop -> 
@@ -42,14 +56,22 @@ export default function App() {
         //setLocation(location);
         setCity(location[0].city);
         console.log(API_KEY);
-        const response = fetch(`https://api.openweathermap.org/data/2.5/onecall?lat=${latitude}&lon=${longitude}&exclude=alerts&appid=${API_KEY}`);
+        const response = fetch(`https://api.openweathermap.org/data/2.5/onecall?lat=${latitude}&lon=${longitude}&exclude=alerts&appid=${API_KEY}&units=metric`);
         const json = await (await response).json();
-        console.log(json.daily);
-        ..........................#2.8 05:52...................
+        setDays(json.daily);
 
+    }
+    const getDate = (add)=>{
+        const today = new Date();
+        const theDay = new Date(today.setDate(today.getDate()+add));
+        // const year = theDay.getFullYear(); // 년도
+        // const month = theDay.getMonth() + 1;  // 월
+        // const date = theDay.getDate();  // 날짜
+        return theDay
     }
     useEffect(()=>{
         getWeather();
+        
     },[])
   return (
     <View style={styles.container}>
@@ -64,22 +86,23 @@ export default function App() {
         indicatorStyle="white"
         contentContainerStyle={styles.weather}
         >
-            <View style={styles.day}>
-                <Text style={styles.temp}>35</Text>
-                <Text style={styles.desc}>Sunny</Text>
-            </View>
-            <View style={styles.day}>
-                <Text style={styles.temp}>35</Text>
-                <Text style={styles.desc}>Sunny</Text>
-            </View>
-            <View style={styles.day}>
-                <Text style={styles.temp}>35</Text>
-                <Text style={styles.desc}>Sunny</Text>
-            </View>
-            <View style={styles.day}>
-                <Text style={styles.temp}>35</Text>
-                <Text style={styles.desc}>Sunny</Text>
-            </View>
+            {
+                days.length === 0 ? 
+                <View style={styles.day}>
+                    <ActivityIndicator style={{marginTop: 10}} size="large"/>
+                </View> : 
+                days.map((day, index)=>{
+                    theDay = getDate(index);
+                    
+                    return (
+                    <View key={index} style={styles.day}>
+                        <Text style={styles.date}>{theDay.getFullYear().toString() + '.' + (theDay.getMonth() + 1).toString() + '.' + theDay.getDate().toString()}</Text>
+                        <Text style={styles.temperature}>{parseFloat(day.temp.day).toFixed(1)}</Text>
+                        <Text style={styles.desc}>{day.weather[0].main}</Text>
+                    </View>)
+                    }
+                )
+            }
         </ScrollView>
     </View>
   );
@@ -98,7 +121,7 @@ const styles = StyleSheet.create({
     },
     cityName:{
         color:"black",
-        fontSize: 48,
+        fontSize: 78,
         fontWeight: "600",
     },
     weather:{
@@ -108,12 +131,16 @@ const styles = StyleSheet.create({
         width: SCREEN_WIDTH,
         alignItems: "center",
     },
-    temp:{
+    temperature:{
         marginTop: 50,
         fontSize: 158,
     },
     desc:{
         marginTop: -30,
         fontSize: 50,
+    },
+    date:{
+        fontSize: 50,
+        
     }
 })
