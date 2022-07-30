@@ -10,6 +10,7 @@ import {
     ActivityIndicator
 } from 'react-native';
 import * as Location from "expo-location";
+import {Fontisto} from "@expo/vector-icons";
 
 
 
@@ -25,12 +26,15 @@ const {height, width:SCREEN_WIDTH} = Dimensions.get("window");
 //free api key 
 const API_KEY = "get your own";
 
-const today = new Date();   
-
-const year = today.getFullYear(); // 년도
-const month = today.getMonth() + 1;  // 월
-const date = today.getDate();  // 날짜
-
+const icons = {
+    Clear: "day-sunny",
+    Clouds: "cloudy",
+    Rain: "rain",
+    Atmosphere: "cloudy-gusts",
+    Snow: "snow",
+    Drizzle: "day-rain",
+    Thunderstorm: "lightning",
+}
 
 
 // Scroll view's prop -> 
@@ -44,7 +48,7 @@ export default function App() {
     const [ok, setOk] =useState(true);
     const getWeather = async()=>{
         //const permission = await Location.requestForegroundPermissionsAsync();
-        //inside of permission(object) there is granted-value
+        //inside of permission(object) there is granted-value -> {granted}  == permission.granted
         const {granted} = await Location.requestForegroundPermissionsAsync();
         if(!granted){
             setOk(false);
@@ -55,10 +59,10 @@ export default function App() {
         const location = await Location.reverseGeocodeAsync({latitude,longitude},{useGoogleMaps:false});
         //setLocation(location);
         setCity(location[0].city);
-        console.log(API_KEY);
-        const response = fetch(`https://api.openweathermap.org/data/2.5/onecall?lat=${latitude}&lon=${longitude}&exclude=alerts&appid=${API_KEY}&units=metric`);
-        const json = await (await response).json();
-        setDays(json.daily);
+        //console.log(API_KEY);
+        const response = await fetch(`https://api.openweathermap.org/data/2.5/onecall?lat=${latitude}&lon=${longitude}&exclude=alerts&appid=${API_KEY}&units=metric`);
+        const json = await response.json();
+        setDays(json.daily); // json.daily is the list containing daily forecasts
 
     }
     const getDate = (add)=>{
@@ -73,74 +77,94 @@ export default function App() {
         getWeather();
         
     },[])
-  return (
-    <View style={styles.container}>
-        <StatusBar style="auto"/>
-        <View style={styles.city}>
-            <Text style={styles.cityName}>{city}</Text>
+    /// '...' operator brings every element from object or array 
+    ///ex: a= [5, 6]\ b= [] \ b.push(1,2,...a) => b = [1, 2, 5, 6]
+    return (
+        <View style={styles.container}>
+            <StatusBar style="auto"/>
+            <View style={styles.city}>
+                <Text style={styles.cityName}>{city}</Text>
+            </View>
+            <ScrollView 
+            horizontal 
+            pagingEnabled 
+            showsHorizontalScrollIndicator={false}
+            indicatorStyle="white"
+            contentContainerStyle={styles.weather}
+            >
+                {
+                    days.length === 0 ? 
+                    <View style={{...styles.day, alignItems:"center"}}>
+                        <ActivityIndicator style={{ marginTop: 10 }} size="large" />
+                    </View> : 
+                    days.map((day, index)=>{
+                        theDay = getDate(index);
+                        
+                        return (
+                        <View key={index} style={styles.day}>
+                            <View style={{flexDirection: "row", alignItems:"center", justifyContent: "space-between", width: "100%"}}>
+                                <Text style={styles.temperature}>{parseFloat(day.temp.day).toFixed(1)}</Text>
+                                <Fontisto name={icons[day.weather[0].main]} style={styles.icon} />
+                            </View>
+                            <Text style={styles.desc}>{day.weather[0].main}</Text>
+                            <Text style={styles.date}>{theDay.getFullYear().toString() + '.' + (theDay.getMonth() + 1).toString() + '.' + theDay.getDate().toString()}</Text>
+                        </View>)
+                        }
+                    )
+                }
+            </ScrollView>
         </View>
-        <ScrollView 
-        horizontal 
-        pagingEnabled 
-        showsHorizontalScrollIndicator={false}
-        indicatorStyle="white"
-        contentContainerStyle={styles.weather}
-        >
-            {
-                days.length === 0 ? 
-                <View style={styles.day}>
-                    <ActivityIndicator style={{marginTop: 10}} size="large"/>
-                </View> : 
-                days.map((day, index)=>{
-                    theDay = getDate(index);
-                    
-                    return (
-                    <View key={index} style={styles.day}>
-                        <Text style={styles.date}>{theDay.getFullYear().toString() + '.' + (theDay.getMonth() + 1).toString() + '.' + theDay.getDate().toString()}</Text>
-                        <Text style={styles.temperature}>{parseFloat(day.temp.day).toFixed(1)}</Text>
-                        <Text style={styles.desc}>{day.weather[0].main}</Text>
-                    </View>)
-                    }
-                )
-            }
-        </ScrollView>
-    </View>
-  );
+    );
 }
 
 const styles = StyleSheet.create({
     container:{
         flex: 1, 
-        backgroundColor: "lightgreen"
+        backgroundColor: "darkseagreen",
+        
+        
     },
     city:{
-        flex: 1, 
+        flex: 1.2, 
         alignItems: "center",
-        justifyContent: "center"
+        justifyContent: "center",
         
     },
     cityName:{
-        color:"black",
-        fontSize: 78,
-        fontWeight: "600",
+        fontSize: 58,
+        fontWeight: "500",
+        color: "white",        
     },
     weather:{
-        
+      
     },
     day:{
         width: SCREEN_WIDTH,
-        alignItems: "center",
+        alignItems: "flex-start",
+        paddingHorizontal: 20,
+        
     },
     temperature:{
-        marginTop: 50,
-        fontSize: 158,
+        color: "white",
+        fontSize: 100,
+        fontWeight: "600",
+        paddingBottom: 0,
     },
     desc:{
-        marginTop: -30,
-        fontSize: 50,
+        marginTop: -20,
+        fontSize: 30,
+        paddingLeft: 10,
+        color: "white",
     },
     date:{
-        fontSize: 50,
-        
-    }
+        fontSize: 25,
+        color: "white",
+        paddingLeft: 10,
+        marginBottom: -15
+    },
+    icon:{
+        fontSize: 58,
+        color: "white",
+    },
+  
 })
